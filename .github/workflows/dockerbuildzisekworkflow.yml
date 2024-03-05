@@ -19,5 +19,5 @@ jobs:
 
       - name: Build and run Docker Compose services
         run: |
-          docker-compose up -d --build --force-recreate
-          docker-compose ps
+          docker compose up -d --build --force-recreate
+          docker compose ps
