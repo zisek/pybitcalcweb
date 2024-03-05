@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h1>Bit Calculator</h1>
+
+    <div class="calculator-container">
+        <div class="form-container">
+            <form class= "calc-form" id="calcForm" action="/calculator">
+                Amount: 
+                {% if validated_input %}
+                <input class="number" type="number" name="amount" value="{{ validated_input.amount|input_amount|safe }}" step="any">
+                {% else %}
+                <input class="number" type="number" name="amount" value="1024" step="any">
+                {% endif %}
+                <br>
+                {% for key in input_map %}
+                    {% if key == 'prefix' %}
+                Prefix and type:
+                    {% elif key == 'base' %}
+                Base notation:
+                    {% endif %}
+                <select name="{{ key }}">
+                    {% for subkey in input_map[key] %}
+                        {% if validated_input and validated_input[key] == subkey %}
+                    <option value="{{ subkey }}" selected>{{ input_map[key][subkey] }}</option>
+                        {% elif not validated_input and (subkey == 'kilo' or subkey == 'byte' or subkey == 'base-2') %}
+                    <option value="{{ subkey }}" selected>{{ input_map[key][subkey] }}</option>
+                        {% else %}
+                    <option value="{{ subkey }}">{{ input_map[key][subkey] }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                    {% if key == 'type' or key == 'base' %}
+                <br>
+                    {% endif %}
+                {% endfor %}
+                <input class="submit" type="submit" value="Calculate">
+            </form>
+        </div>
+    </div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+    <div class="error">
+        <h1>Input error(s):</h1>
+        <ul>
+        {% for message in messages %}
+            <li>{{ message|safe }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+        {% endif %}
+    {% endwith %}
+    {% if conversion_table %}
+    <div class="conversion-table">
+        <table>
+            <tr>
+                <th>Abbr.</th>
+                <th>Label</th>
+                <th>Amount</th>
+            </tr>
+            {% for result in conversion_table %}
+            <tr>
+                {% if  result.result_amount == validated_input.amount %}
+                    <td class="targeted-row">{{ result.abbr|safe  }}</td>
+                    <td class="targeted-row">{{ result.label|title|safe  }}s</td>
+                    <td class="targeted-row">{{ result.result_amount|decimal|safe  }}</td>
+                {% else%}
+                    <td>{{ result.abbr|safe  }}</td>
+                    <td>{{ result.label|title|safe  }}s</td>
+                    <td>{{ result.result_amount|decimal|safe }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+    <div class="footnotes">
+        <p>Inspired by <a href="http://www.matisse.net/bitcalc" target="new">Matisse's Bit Calculator</a></p>
+        <p>Units conform to <a href="https://wiki.ubuntu.com/UnitsPolicy" target="new">Ubuntu Units Policy</a></p>
+        <p><a href="https://github.com/miliarch/pybitcalcweb" target="new">Source</a></p>
+    </div>
+{% endblock %}

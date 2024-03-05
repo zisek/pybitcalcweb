@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Design</title>
+    <link rel="stylesheet" href="stylesheet.css">
+</head>
+<body>
+<p>This is very early conceptual design work, probably not to be taken too seriously</p>
+<h1>Input</h1>
+
+<h2>Base</h2>
+<ul>
+    <li>Kilo equals 1000 (base-10)</li>
+    <li>Kilo equals 1024 (base-2)</li>
+</ul>
+<h2>Value</h2>
+<ul>
+    <li>Bit or byte value</li>
+</ul>
+<h2>Type</h2>
+<ul>
+    <li>b - bit</li>
+    <li>B - byte</li>
+</ul>
+
+<h2>Prefix</h2>
+<ul>
+    <li>KB - Kilo</li>
+    <li>MB - Mega</li>
+    <li>GB - Giga</li>
+    <li>TB - Tera</li>
+    <li>PB - Peta</li>
+</ul>
+
+<h2>Example form</h2>
+<form action="/calculate" method="post">
+    Amount:
+    <input type="number" name="amount" value=""><br>
+    Prefix and type:
+    <select name="prefix">
+        <option value="none">-</option>
+        <option value="kilo" selected>Kilo</option>
+        <option value="mega">Mega</option>
+        <option value="giga">Giga</option>
+        <option value="tera">Tera</option>
+        <option value="peta">Peta</option>
+    </select>
+    <select name="type">
+        <option value="bit">bit</option>
+        <option value="byte" selected>byte</option>
+    </select><br>
+    Base/Notation:
+    <select name="base">
+        <option value="base-2" selected>1024 (base-2)</option>
+        <option value="base-10">1000 (base-10)</option>
+    </select><br>
+    <input type="submit" value="Print Conversion Table">
+</form>
+
+<h1>Output</h1>
+<h2>Example output</h2>
+<table>
+    <tr>
+        <th>Abbr.</th>
+        <th>Label</th>
+        <th>Result Size</th>
+        <th>Input Size</th>
+    </tr>
+    <tr>
+        <td>B</td>
+        <td>Bytes</td>
+        <td>1024</td>
+        <td>1024</td>
+    </tr>
+    <tr>
+        <td class="targeted-row">b</td>
+        <td class="targeted-row">Bits</td>
+        <td class="targeted-cell">8192</td>
+        <td class="targeted-row">1024</td>
+    </tr>
+    <tr>
+        <td>KiB</td>
+        <td>Kibibytes</td>
+        <td>8</td>
+        <td>1024</td>
+    </tr>
+    <tr>
+        <td>Kib</td>
+        <td>Kibibits</td>
+        <td>1</td>
+        <td>1024</td>
+    </tr>
+</table>
+
+<h2>Math</h2>
+
+<h3>Convert between bits and bytes</h3>
+<pre>
+    b = bits
+    B = bytes
+
+    b / 8 = B
+    B * 8 = b
+</pre>
+
+<h3>Normalize input value to bits</h3>
+If input value is in bytes (any prefix), convert to the bit value.
+<pre>
+    if not input_is_bit:
+        input * 8 = bit_value
+</pre>
+
+<h3>Convert from prefix value to base bit value</h3>
+<pre>
+    base_2 = 1024
+    base_10 = 1000
+    base_unit = [base_2|base_10]
+
+    {
+        "K": input * base_unit,
+        "M": input * pow(base_unit, 2),
+        "G": input * pow(base_unit, 3),
+        "T": input * pow(base_unit, 4),
+        "P": input * pow(base_unit, 5)
+    }
+</pre>
+
+<h3>Calculate all prefixes from converted bit value</h3>
+<pre>
+    bit_value = 8589934592 # converted bit value
+    base_unit = [base_2|base_10]
+    base_key = 'b2' if base_unit == base_2 else 'b10'
+    results = []
+
+    for idx, prefix in enumerate(unit_table[base_key]):
+        abbr = prefix
+        label = unit_table[base_key][prefix]
+
+        if idx == 0:
+            # Value is already in bits, do no calculation and store as 'value'
+            value = bit_value
+        elif idx == 1:
+            # Convert bits to bytes, store as 'value'
+            value = bit_value * 8 # Convert bits to bytes
+        else:
+            # Convert previous like prefix to next prefix, store as 'value'
+            value = results[idx - 2]['result_amount'] / base_unit
+
+        # Define result mapping
+        result = {'abbr': abbr, 'label': label, 'result_amount': value}
+
+        # Append result mapping to results list
+        results.append(result)
+
+</pre>
+<h4>Example "results" list</h4>
+<pre>
+    [
+        {
+            'abbr': 'b',
+            'label': 'bit',
+            'result_amount': '8589934592'
+        },
+        {
+            'abbr': 'B',
+            'label': 'byte',
+            'result_amount': '1073741824'
+        },
+        {
+            'abbr': 'Kib',
+            'label': 'kibibit',
+            'result_amount': '8388608'
+        },
+        {
+            'abbr': 'KiB',
+            'label': 'kibibyte',
+            'result_amount': '1048576'
+        },
+        {
+            'abbr': 'Mib',
+            'label': 'mebibit',
+            'result_amount': '8192'
+        },
+        {
+            'abbr': 'MiB',
+            'label': 'mebibyte',
+            'result_amount': '1024'
+        },
+        {
+            'abbr': 'Gib',
+            'label': 'gibibit',
+            'result_amount': '8'
+        },
+        {
+            'abbr': 'GiB',
+            'label': 'gibibyte',
+            'result_amount': '1'
+        },
+        {
+            'abbr': 'Tib',
+            'label': 'tebibit',
+            'result_amount': '0.0078125'
+        },
+        {
+            'abbr': 'TiB',
+            'label': 'tebibyte',
+            'result_amount': '0.0009765625'
+        },
+        {
+            'abbr': 'Pib',
+            'label': 'pebibit',
+            'result_amount': '0.000007629394531'
+        },
+        {
+            'abbr': 'PiB',
+            'label': 'pebibyte',
+            'result_amount': '0.000000953674316'
+        }
+    ]
+</pre>
+
+
+</body>
+</html>
+
+
+

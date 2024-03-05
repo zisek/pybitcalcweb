@@ -1,0 +1,15 @@
+# Add this snippet to ./compose/docker-compose.yml to build a go container
+# that runs 'hey' to test gunicorn/nginx proxy configuration. Be sure to set
+# target hostname:port as needed in the "command" definition.
+# References:
+# - Gunicorn docs: http://docs.gunicorn.org/en/stable/faq.html#how-might-i-test-a-proxy-configuration
+# - rakyll/hey: https://github.com/rakyll/hey
+    proxy_test:
+        container_name: bitcalc_proxy_test
+        build:
+            context: ../
+            dockerfile: ./test/proxy_config/Dockerfile
+        depends_on:
+            - web
+            - app
+        command: hey -n 10000 -c 100 'http://app:5000/calculator?amount=5&prefix=giga&type=byte&base=base-2'

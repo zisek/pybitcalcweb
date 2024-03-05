@@ -1,0 +1,39 @@
+table, th, td {
+    border: 1px solid black;
+    font-family: "Lucida Console", Monaco, monospace; 
+}
+
+th, td {
+    font-size: 70%;
+    vertical-align: center;
+    min-width: 50px;
+    text-align: left;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th {
+    padding: 5px;
+    color: #000;
+    background-color: #c0c0c0;
+    height: 10px;
+    font-weight: bold;
+}
+
+td {
+    color: #000;
+    height: 10px;
+    background-color: #fff;
+    padding: 5px;
+}
+
+td.targeted-row {
+    background-color: #f7d52e;
+}
+
+td.targeted-cell {
+    background-color: #f7b42d;
+    font-weight: bold;
+}
