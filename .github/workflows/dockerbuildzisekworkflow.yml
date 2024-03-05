@@ -21,4 +21,3 @@ jobs:
         run: |
           docker-compose up -d --build --force-recreate
           docker-compose ps
-          docker build . --file Dockerfile --tag my-image-name:$(date +%s)
