@@ -1,6 +1,6 @@
 # Python Bit Calculator (Web)
 
-Containerized python bit calculator web app with a single purpose - converting those bits
+Containerized python bit calculator web app with a single purpose - converting those bits - MZ version
 
 ## Screenshot
 
